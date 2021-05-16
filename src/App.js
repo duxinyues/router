@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {Page1}  from "./components/page1"
+const CountContext = React.createContext();
+// function App(prop) {
+//  const [num,setNum] = useState(10);
+//  const  btn = ()=>{
+//    setNum(10);
+//  }
+//   return <CountContext.Provider value={num}>
+//         <button onClick={btn}>+</button>
+//         <Page1 />
+//   </CountContext.Provider>;
+// }
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class  App extends React.Component{
+  state={
+    count:0
+  }
+ if(){}
+  render(){
+    return <CountContext.Provider value={this.state.count}>
+    <Page1 count={this.state.count} />
+    <button onClick={()=>{
+      this.setState({
+        count:this.state.count+1
+      })
+    }}>+</button>
+   
+    </CountContext.Provider>
+  }
 }
 
 export default App;
