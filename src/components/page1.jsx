@@ -2,8 +2,8 @@
  * @FileName: 
  * @Author: duxinyue
  * @Date: 2021-05-15 11:54:32
- * @LastEditors: yongyuan at <yongyuan253015@gmail.com>
- * @LastEditTime: 2021-07-20 00:10:07
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2021-10-03 14:32:05
  * @FilePath: \router\src\components\page1.jsx
  * @Description: 
  */
@@ -17,6 +17,7 @@ export function Page1(props) {
     return <Toolbar />
 }
 function Toolbar(props) {
+    console.log(props)
     const [all, setAll] = useState(false);
     const [date, setDate] = useState([moment('2015/01/01', dateFormat), moment('2015/01/01', dateFormat)])
     const allDate = () => {
@@ -29,7 +30,6 @@ function Toolbar(props) {
     }
     const onYear = () => {
         var nowDate = new Date();
-        console.log(nowDate.getFullYear())
         setAll(false)
         setDate([moment(`${nowDate.getFullYear()}-01-01`, dateFormat), moment(`${nowDate.getFullYear()}-12-31`, dateFormat)])
     }
