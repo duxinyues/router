@@ -2,13 +2,13 @@
  * @Author: yongyuan253015@gmail.com
  * @Date: 2021-12-28 22:25:13
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-12-29 22:47:35
+ * @LastEditTime: 2021-12-31 23:05:53
  * @Description: 文件描述
  */
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import thunkMiddleware from 'redux-thunk'
+import promiseMiddleware from '../middleware/promiseMiddleware';
 import weatherReducer from './reduers'
-const middlewares = [thunkMiddleware];
+const middlewares = [promiseMiddleware];
 const win = window;
 
 const reducers = combineReducers({
