@@ -2,7 +2,7 @@
  * @Author: yongyuan253015@gmail.com
  * @Date: 2021-12-29 21:33:33
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-12-29 23:04:28
+ * @LastEditTime: 2021-12-31 23:06:18
  * @Description: 文件描述
  */
 export const fetchWeatherStarted = () => ({
@@ -18,27 +18,15 @@ export const fetchWeatherFailure = (error) => ({
     error
 })
 export const fetchWeather = (cityCode) => {
-    return (dispatch) => {
-        const apiUrl = `/data/cityinfo/${cityCode}.html?_=` + new Date().getTime();
+    const apiUrl = `/data/cityinfo/${cityCode}.html?_=` + new Date().getTime();
 
-        dispatch(fetchWeatherStarted());
-
-        return fetch(apiUrl)
-            .then(response => {
-                if (response.status !== 200) {
-                    throw new Error('获取数据失败' + response.status);
-                }
-
-                response.json()
-                    .then((res) => {
-                        dispatch(fetchWeatherSuccess(res));
-                    })
-                    .catch(error => {
-                        dispatch(fetchWeatherFailure(error))
-                    });
-            })
-            .catch(error => {
-                dispatch(fetchWeatherFailure(error))
-            })
-    }
+    return {
+        promise: fetch(apiUrl).then((res) => {
+            if (res.status !== 200) {
+                throw new Error("报错了" + res.status)
+            }
+            return res.json().then(result => result.weatherinfo);
+        }),
+        types: ['FETCH_STARTED', 'FETCH_SUCCESS', 'FETCH_FAILURE']
+    };
 }
