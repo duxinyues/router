@@ -4,21 +4,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 let mode = 'development';
 let target = "web";
-
-if (process.env.NODE_ENV === 'production') {
-  mode = 'production';
-  target = "browserslist";
-}
-module.exports = {
+const config = {
   entry: './src/index.js',
   output: {
     filename: 'bundle.js',
     path: path.join(__dirname, 'build'),
-    assetModuleFilename: "images/[hash][ext][query]",
   },
   devServer: {
     static: path.join(__filename, 'build'),
     port: 2022,
+    hot: true,
+    compress: true,
   },
   mode: mode,
   devtool: 'source-map',
@@ -26,15 +22,35 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
+        test: /\.m?(js|jsx)$/,
+        exclude: /(node_modules|bower_components)/,
         use: {
           loader: 'babel-loader',
-        }
+          options: {
+            presets: ['@babel/preset-env', ['@babel/preset-react', { runtime: 'automatic' }]],
+          },
+        },
       },
       {
         test: /\.css$/i,
         use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          { loader: 'style-loader' },
+          {
+            loader: 'css-loader',
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true,
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.(pag|jpe?g|gif|svg)$/i,
@@ -45,29 +61,27 @@ module.exports = {
           }
         }
       },
-      {
-        test: /\.(s[ac]|c)ss$/i,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: { publicPath: "" },
-          },
-          "css-loader",
-          "postcss-loader",
-          "sass-loader"
-        ]
-      }
     ]
   },
-  plugin: [
+  plugins: [
+    // new webpack.ProgressPlugin(),
     new MiniCssExtractPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: "./src/index.html",
     }),
   ],
-
-  resolve: {
-    extensions: [".js", ".jsx", ".tsx"],
+  optimization: {
+    minimize: false
   }
+}
+module.exports = (env, argv) => {
+  if (argv.mode === 'development') {
+    config.devtool = 'source-map'
+  }
+
+  if (argv.mode === 'production') { }
+
+
+  return config;
 }
