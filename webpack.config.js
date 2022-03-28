@@ -1,39 +1,30 @@
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-let mode = 'development';
-let target = "web";
+const path = require('path');
+const ESLintPlugin = require('eslint-webpack-plugin');
+
 const config = {
-  entry: './src/index.js',
+  entry: path.resolve(__dirname, './src/index.js'),
   output: {
     filename: 'bundle.js',
-    path: path.join(__dirname, 'build'),
+    path: path.join(__dirname, 'dist'),
   },
-  devServer: {
-    static: path.join(__filename, 'build'),
-    port: 2022,
-    hot: true,
-    compress: true,
-  },
-  mode: mode,
-  devtool: 'source-map',
-  target: target,
+
   module: {
     rules: [
       {
-        test: /\.m?(js|jsx)$/,
-        exclude: /(node_modules|bower_components)/,
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', ['@babel/preset-react', { runtime: 'automatic' }]],
+            presets: [['@babel/preset-env'], ['@babel/preset-react', { runtime: 'classic' }]],
+            plugins: [
+              '@babel/plugin-transform-runtime',
+              '@babel/plugin-proposal-class-properties',
+            ],
           },
         },
-      },
-      {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"]
       },
       {
         test: /\.scss$/,
@@ -45,43 +36,42 @@ const config = {
           {
             loader: 'sass-loader',
             options: {
-              lessOptions: {
-                javascriptEnabled: true,
+              sassOptions: {
+                javascriptEnabled: true, // 不加这个会报这个错https://github.com/ant-design/ant-design/issues/7927#issuecomment-372513256
               },
             },
           },
         ],
       },
-      {
-        test: /\.(pag|jpe?g|gif|svg)$/i,
-        type: "asset",
-        parser: {
-          dataUrlCondition: {
-            maxSize: 30 * 1024,
-          }
-        }
-      },
-    ]
+    ],
   },
   plugins: [
-    // new webpack.ProgressPlugin(),
-    new MiniCssExtractPlugin(),
-    new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      template: "./src/index.html",
-    }),
+    new webpack.ProgressPlugin(),
+    new HtmlWebpackPlugin({ template: './src/index.html' }),
+    new ESLintPlugin({ extensions: ['.js', '.jsx'] }),
   ],
   optimization: {
-    minimize: false
-  }
-}
+    minimize: false,
+  },
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'build'),
+    },
+    hot: true,
+    compress: true,
+    port: 2022,
+  },
+};
 module.exports = (env, argv) => {
+  console.log('process.env.NODE_ENV', process.env.NODE_ENV); // 除非npm run start语句加上set NODE_ENV=development这条语句可以正常打印到值
+  console.log('argv.mode', argv.mode); // start 命令设置了 --mode=development
   if (argv.mode === 'development') {
-    config.devtool = 'source-map'
+    config.devtool = 'source-map';
   }
 
-  if (argv.mode === 'production') { }
-
+  if (argv.mode === 'production') {
+    // ...
+  }
 
   return config;
-}
+};
