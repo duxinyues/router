@@ -10,12 +10,5 @@
                 "useBuiltIns": "usage"
             }
         ]
-    ],
-    "plugins": [
-        ["import", {
-            "libraryName": "antd",
-            "libraryDirectory": "es",
-            "style":"css"
-        }]
     ]
 }

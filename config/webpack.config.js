@@ -5,11 +5,12 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const config = {
-  entry: path.resolve(__dirname, './src/index.js'),
+  entry: path.resolve(__dirname, '../src/index.js'),
   output: {
     filename: 'bundle.js',
     path: path.join(__dirname, 'dist'),
   },
+  mode: 'development',
   resolve: {
     extensions: ['.js', '.jsx', '.json'],
   },
@@ -25,6 +26,11 @@ const config = {
             plugins: [
               '@babel/plugin-transform-runtime',
               '@babel/plugin-proposal-class-properties',
+              ['import', {
+                libraryName: 'antd',
+                libraryDirectory: 'es',
+                style: 'css',
+              }],
             ],
           },
         },
@@ -66,13 +72,14 @@ const config = {
     new HtmlWebpackPlugin({ template: './src/index.html' }),
     new ESLintPlugin({ extensions: ['.js', '.jsx'] }),
     new CleanWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
   ],
   optimization: {
     minimize: false,
   },
   devServer: {
     static: {
-      directory: path.join(__dirname, 'build'),
+      directory: path.join(__dirname, '/'),
     },
     hot: true,
     compress: true,
