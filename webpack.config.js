@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const config = {
   entry: path.resolve(__dirname, './src/index.js'),
@@ -9,7 +10,9 @@ const config = {
     filename: 'bundle.js',
     path: path.join(__dirname, 'dist'),
   },
-
+  resolve: {
+    extensions: ['.js', '.jsx', '.json'],
+  },
   module: {
     rules: [
       {
@@ -27,7 +30,7 @@ const config = {
         },
       },
       {
-        test: /\.scss$/,
+        test: /\.(sc|c)ss$/,
         use: [
           { loader: 'style-loader' },
           {
@@ -43,12 +46,26 @@ const config = {
           },
         ],
       },
+      {
+        test: /\.(pag|jpg|gif|jpeg|webp|svg|eot|ttf|woff|woff2)/,
+        exclude: /node_modules/,
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 10240,
+            esModule: false,
+            name: '[name]_[contenthash:6].[ext]',
+            outPath: 'assets/images',
+          },
+        }],
+      },
     ],
   },
   plugins: [
     new webpack.ProgressPlugin(),
     new HtmlWebpackPlugin({ template: './src/index.html' }),
     new ESLintPlugin({ extensions: ['.js', '.jsx'] }),
+    new CleanWebpackPlugin(),
   ],
   optimization: {
     minimize: false,
@@ -63,8 +80,6 @@ const config = {
   },
 };
 module.exports = (env, argv) => {
-  console.log('process.env.NODE_ENV', process.env.NODE_ENV); // 除非npm run start语句加上set NODE_ENV=development这条语句可以正常打印到值
-  console.log('argv.mode', argv.mode); // start 命令设置了 --mode=development
   if (argv.mode === 'development') {
     config.devtool = 'source-map';
   }
